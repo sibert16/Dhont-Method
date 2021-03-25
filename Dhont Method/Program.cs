@@ -38,6 +38,81 @@ namespace Dhont_Method
         }
 
 
+        // Displays political partys 
+        private static void DisplayWinningParties(List<Parties> partys)
+        {
+            foreach (Parties pobj in partys)
+            {
+                if (pobj.Seats > 0)
+                {
+                    Console.WriteLine(pobj);
+                }
+            }
+        }
+
+       
+        private static int SumOfVotes(List<Parties> partys)
+        {
+            int totalVotes = 0;
+            foreach (Parties pobj in partys)
+            {
+                totalVotes += pobj.Votes;
+            }
+            Console.WriteLine($"\nTotal votes counted : {totalVotes}");
+            return totalVotes;
+        }
+
+        // Displays percent of votes for each party 
+        private static void DisplayPercentageVotes(List<Parties> partys, int threshold, int totalvotes)
+        {
+            // Displays percent of votes for each party 
+            Console.WriteLine($"Party(s) that have met the {threshold}% threshold :");
+            foreach (Parties pobj in partys)
+            {
+                if (pobj.PercentOfVotes(totalvotes) > threshold)
+                {
+                    Console.WriteLine($"{pobj.Name} has {Math.Round(pobj.PercentOfVotes(totalvotes), 2)} % of total votes.");
+                }
+
+                else
+                {
+                    Console.WriteLine($"None");
+                }
+
+            }
+
+        }
+
+        // Method to do the main caclutions of the Dhon't method
+        private static void CalculateDhondt(List<Parties> partys, int seatsCount)
+        {
+            // Find intial party with highest votes
+            Parties biggestVote = partys.Aggregate((v1, v2) => v1.Votes > v2.Votes ? v1 : v2);
+            biggestVote.Seats += 1;
+            biggestVote.DivideParty();
+
+            // Keep looping through partys and applying dhond't method until all seats are taken
+            int totalSeatsCount = 0;
+            while (totalSeatsCount != seatsCount)
+            {
+                Parties biggestVotes = partys.Aggregate((v1, v2) => v1.NewVotes > v2.NewVotes ? v1 : v2);
+                biggestVotes.Seats += 1;
+                biggestVotes.DivideParty();
+
+                foreach (Parties pobj in partys)
+                {
+                    totalSeatsCount += pobj.Seats;
+                }
+                // If we havent reached desired seats count reset the total seats variable
+                if (totalSeatsCount != seatsCount)
+                {
+                    totalSeatsCount = 0;
+                }
+            }
+            Console.WriteLine($"\nWE HAVE {seatsCount} SEATS ALLOCATED:");
+        }
+    }
+}
 
 
 
